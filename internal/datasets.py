@@ -31,6 +31,7 @@ import cv2
 def load_dataset(split, train_dir, config):
   """Loads a split of a dataset using the data_loader specified by `config`."""
   dataset_dict = {
+      'eth3d': ETH3D,
       'blender': Blender,
       'llff': LLFF,
       'multicam': Multicam,
@@ -944,6 +945,37 @@ class Blender(Dataset):
     self.focal = .5 * self.width / np.tan(.5 * float(meta['camera_angle_x']))
     self.n_examples = self.images.shape[0]
 
+
+class ETH3D(Dataset):
+  """ETH3D Dataset."""
+
+  def _load_renderings(self, config):
+    """Load images from disk."""
+    if config.render_path:
+      raise ValueError('render_path cannot be used for the blender dataset.')
+    with utils.open_file(
+        path.join(self.data_dir, f'transforms_{self.split}.json'), 'r') as fp:
+      meta = json.load(fp)
+    images = []
+
+    cams = []
+    for frame in meta['frames']:
+      fprefix = self.data_dir
+      with utils.open_file(os.path.join(fprefix + frame['file_path']), 'rb') as imgin:
+        image = np.array(Image.open(imgin), dtype=np.float32) / 255.
+
+      cams.append(np.array(frame['transform_matrix'], dtype=np.float32))
+      images.append(image)
+    self.images = np.stack(images, axis=0)
+    self.images_all = images
+    self.camtoworlds_all = np.stack(cams, axis=0)
+    self.images = images
+    self.camtoworlds = np.stack(cams, axis=0)
+    self.height, self.width = self.images.shape[1:3]
+    self.resolution = self.height * self.width
+
+    self.focal = .5 * self.width / np.tan(.5 * float(meta['camera_angle_x']))
+    self.n_examples = self.images.shape[0]
 
 class LLFF(Dataset):
   """LLFF Dataset."""
