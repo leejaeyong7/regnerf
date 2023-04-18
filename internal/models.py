@@ -24,6 +24,7 @@ from internal import mip, utils  # pylint: disable=g-multiple-import
 import jax
 from jax import random
 import jax.numpy as jnp
+from tqdm import tqdm
 
 
 @gin.configurable
@@ -301,10 +302,10 @@ def render_image(render_fn, rays, rng, config):
   host_id = jax.host_id()
   chunks = []
   idx0s = range(0, num_rays, config.render_chunk_size)
-  for i_chunk, idx0 in enumerate(idx0s):
-    # pylint: disable=cell-var-from-loop
-    if i_chunk % max(1, len(idx0s) // 10) == 0:
-      print(f'Rendering chunk {i_chunk}/{len(idx0s)-1}')
+  for i_chunk, idx0 in tqdm(enumerate(idx0s), total=len(idx0s), leave=False, dynamic_ncols=True):
+    # # pylint: disable=cell-var-from-loop
+    # if i_chunk % max(1, len(idx0s) // 10) == 0:
+    #   print(f'Rendering chunk {i_chunk}/{len(idx0s)-1}')
     chunk_rays = (
         jax.tree_map(lambda r: r[idx0:idx0 + config.render_chunk_size], rays))
     actual_chunk_size = chunk_rays.origins.shape[0]

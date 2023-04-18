@@ -1,10 +1,14 @@
-# LLFF
-Config.data_dir = "/data/nerf_data/nerf_llff_data"
-Config.checkpoint_dir = "out/llff9_room"
 Config.dataset_loader = 'eth3d'
+Config.batching = 'single_image'
+Config.batching_random = 'single_image'
 Config.white_background = False
 Config.near = 0
 Config.far = 3
+Config.n_random_poses = 1000
+Config.factor = 1
+Config.render_factor = 1
+Config.batch_size = 1024
+Config.batch_size_random = 1024
 MipNerfModel.ray_shape = 'cylinder'
 MLP.density_noise = 1.
 

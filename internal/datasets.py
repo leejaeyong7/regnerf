@@ -392,9 +392,8 @@ class Dataset(threading.Thread):
       self._train_init(config)
     elif split == 'test':
       self._test_init(config)
-    else:
-      raise ValueError(
-          f'`split` should be \'train\' or \'test\', but is \'{split}\'.')
+    elif split == 'all':
+      self._test_init(config)
     self.batch_size = config.batch_size // jax.host_count()
     self.batch_size_random = config.batch_size_random // jax.host_count()
     print('Using following batch size', self.batch_size)
@@ -953,8 +952,12 @@ class ETH3D(Dataset):
     """Load images from disk."""
     if config.render_path:
       raise ValueError('render_path cannot be used for the blender dataset.')
-    with utils.open_file(
-        path.join(self.data_dir, f'transforms_{self.split}.json'), 'r') as fp:
+    if self.split != 'all':
+      transform_filename = f'transforms_{self.split}.json'
+    else:
+      transform_filename = f'transforms.json'
+
+    with utils.open_file(path.join(self.data_dir, transform_filename), 'r') as fp:
       meta = json.load(fp)
     images = []
 
@@ -965,11 +968,12 @@ class ETH3D(Dataset):
         image = np.array(Image.open(imgin), dtype=np.float32) / 255.
 
       cams.append(np.array(frame['transform_matrix'], dtype=np.float32))
+      if config.factor > 1:
+        image = downsample(image, config.factor)
       images.append(image)
     self.images = np.stack(images, axis=0)
     self.images_all = images
     self.camtoworlds_all = np.stack(cams, axis=0)
-    self.images = images
     self.camtoworlds = np.stack(cams, axis=0)
     self.height, self.width = self.images.shape[1:3]
     self.resolution = self.height * self.width
