@@ -447,9 +447,11 @@ class Dataset(threading.Thread):
     """Initialize training."""
     self._load_renderings(config)
     self._generate_downsampled_images(config)
+    print('generating rays')
     self._generate_rays(config)
     self._generate_downsampled_rays(config)
     # Generate more rays / image patches for unobserved-view-based losses.
+    print('generating random rays')
     if self.load_random_rays:
       self._generate_random_rays(config)
     if self.load_random_fullimage_rays:
@@ -965,6 +967,7 @@ class ETH3D(Dataset):
     images = []
 
     cams = []
+    print('Loading frames...')
     for frame in meta['frames']:
       fprefix = self.data_dir
       with utils.open_file(os.path.join(fprefix + frame['file_path']), 'rb') as imgin:
