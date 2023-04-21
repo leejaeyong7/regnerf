@@ -952,10 +952,13 @@ class ETH3D(Dataset):
     """Load images from disk."""
     if config.render_path:
       raise ValueError('render_path cannot be used for the blender dataset.')
-    if self.split != 'all':
-      transform_filename = f'transforms_{self.split}.json'
-    else:
+    if config.full_training:
       transform_filename = f'transforms.json'
+    else:
+      if self.split != 'all':
+        transform_filename = f'transforms_{self.split}.json'
+      else:
+        transform_filename = f'transforms.json'
 
     with utils.open_file(path.join(self.data_dir, transform_filename), 'r') as fp:
       meta = json.load(fp)

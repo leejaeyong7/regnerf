@@ -1,18 +1,12 @@
-export CUDA_VISIBLE_DEVICES=0
-DATA_DIR="/mnt/data1/eth3d_processed/"
-CHECKPOINT_DIR="/mnt/data1/regnerf_outputs/"
+MOUNT_DIR="/home/lee896/data/$(hostname -s)"
+DATA_DIR="${MOUNT_DIR}/eth3d_processed"
+CHECKPOINT_DIR="/${MOUNT_DIR}/eth3d_outputs"
+mkdir -p $CHECKPOINT_DIR
+scene=$1
+rm -r "${CHECKPOINT_DIR}/${scene}/"
+python -m train --gin_configs=configs/eth3d.gin --gin_bindings="Config.data_dir = '${DATA_DIR}/${scene}/'" --gin_bindings="Config.checkpoint_dir = '${CHECKPOINT_DIR}/${scene}/'"
+python -m write --gin_configs=configs/eth3d.gin --gin_bindings="Config.data_dir = '${DATA_DIR}/${scene}/'" --gin_bindings="Config.checkpoint_dir = '${CHECKPOINT_DIR}/${scene}/'"
 
-SCENES=(courtyard delivery_area electro facade kicker meadow office pipes playground relief relief_2 terrace terrains)
-for scene in "${SCENES[@]}" 
-do
-  mkdir -p ${CHECKPOINT_DIR}/
-  rm -r "${CHECKPOINT_DIR}/${scene}/"
-  python -m train \
-    --gin_configs=configs/eth3d.gin \
-    --gin_bindings="Config.data_dir = '${DATA_DIR}/${scene}/'" \
-    --gin_bindings="Config.checkpoint_dir = '${CHECKPOINT_DIR}/${scene}/'"
-  python -m eval \
-    --gin_configs=configs/eth3d.gin \
-    --gin_bindings="Config.data_dir = '${DATA_DIR}/${scene}/'" \
-    --gin_bindings="Config.checkpoint_dir = '${CHECKPOINT_DIR}/${scene}/'"
-done
+# after training, upload results to jyl.kr
+zip -r ${CHECKPOINT_DIR}/${scene}/${scene}.zip ${CHECKPOINT_DIR}/${scene}/results
+scp -r ${CHECKPOINT_DIR}/${scene}/${scene}.zip jyl:/mnt/data1/cluster_results/regnerf/

@@ -9,6 +9,7 @@ Config.factor = 1
 Config.render_factor = 1
 Config.batch_size = 1024
 Config.batch_size_random = 1024
+Config.full_training = False
 MipNerfModel.ray_shape = 'cylinder'
 MLP.density_noise = 1.
 
