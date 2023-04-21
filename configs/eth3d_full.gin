@@ -1,0 +1,33 @@
+Config.dataset_loader = 'eth3d'
+Config.batching = 'single_image'
+Config.batching_random = 'single_image'
+Config.white_background = False
+Config.near = 0
+Config.far = 3
+Config.n_random_poses = 1000
+Config.factor = 1
+Config.render_factor = 1
+Config.batch_size = 1024
+Config.batch_size_random = 1024
+Config.full_training = True
+MipNerfModel.ray_shape = 'cylinder'
+MLP.density_noise = 1.
+
+Config.n_input_views = 0
+Config.max_steps = 200000
+Config.lr_init = 0.002
+Config.lr_final = 0.00002
+Config.lr_delay_steps = 512
+Config.lr_delay_mult = 0.01
+Config.grad_max_norm = 0.1
+Config.grad_max_val = 0.1
+
+Config.anneal_nearfar = False
+
+Config.depth_tvnorm_loss_mult = 0.1
+Config.depth_tvnorm_decay = True
+Config.depth_tvnorm_maxstep = 512
+Config.depth_tvnorm_loss_mult_start = 400.0
+Config.depth_tvnorm_loss_mult_end = 0.1
+
+Config.flow_loss_mult = 0.0
