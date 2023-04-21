@@ -1,6 +1,6 @@
 MOUNT_DIR="/home/lee896/data/$(hostname -s)"
 DATA_DIR="${MOUNT_DIR}/eth3d_processed"
-CHECKPOINT_DIR="/${MOUNT_DIR}/eth3d_outputs_regnerf"
+CHECKPOINT_DIR="${MOUNT_DIR}/eth3d_outputs_regnerf"
 mkdir -p $CHECKPOINT_DIR
 scene=$1
 rm -r "${CHECKPOINT_DIR}/${scene}/"
